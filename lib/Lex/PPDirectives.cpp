@@ -804,7 +804,7 @@ const FileEntry *Preprocessor::LookupFile(
     while (const FileEntry *FE = HeaderInfo.LookupFile(
                Filename, FilenameLoc, isAngled, TmpFromDir, TmpCurDir,
                Includers, SearchPath, RelativePath, RequestingModule,
-               SuggestedModule, SkipCache)) {
+               SuggestedModule)) {
       // Keep looking as if this file did a #include_next.
       TmpFromDir = TmpCurDir;
       ++TmpFromDir;
@@ -1793,7 +1793,7 @@ void Preprocessor::HandleIncludeDirective(SourceLocation HashLoc,
     if (Callbacks) {
       // Give the clients a chance to recover.
       SmallString<128> RecoveryPath;
-      if (Callbacks->FileNotFound(Filename, RecoveryPath)) {
+      if (Callbacks->FileNotFound(HashLoc, Filename, RecoveryPath)) {
         if (const DirectoryEntry *DE = FileMgr.getDirectory(RecoveryPath)) {
           // Add the recovery path to the list of search paths.
           DirectoryLookup DL(DE, SrcMgr::C_User, false);

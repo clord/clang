@@ -30,6 +30,7 @@ namespace clang {
   class MacroDefinition;
   class MacroDirective;
   class MacroArgs;
+  class MacroInfo;
 
 /// \brief This interface provides a way to observe the actions of the
 /// preprocessor as it does its thing.
@@ -68,6 +69,9 @@ public:
   /// \brief Callback invoked whenever an inclusion directive results in a
   /// file-not-found error.
   ///
+  /// \param HashLoc The location of the '#' that starts the inclusion 
+  /// directive.
+  ///
   /// \param FileName The name of the file being included, as written in the 
   /// source code.
   ///
@@ -77,7 +81,7 @@ public:
   ///
   /// \returns true to indicate that the preprocessor should attempt to recover
   /// by adding \p RecoveryPath as a header search path.
-  virtual bool FileNotFound(StringRef FileName,
+  virtual bool FileNotFound(SourceLocation HashLoc, StringRef FileName,
                             SmallVectorImpl<char> &RecoveryPath) {
     return false;
   }
@@ -318,6 +322,14 @@ public:
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
   virtual void Endif(SourceLocation Loc, SourceLocation IfLoc) {
   }
+
+  /// Called when a new token is expanded from a macro.
+  virtual void MacroTokenExpanded(const Token &Tok) {
+  }
+
+  /// Called when a macro expansion finishes.
+  virtual void MacroExpansionFinished(const MacroInfo *MI) {
+  }
 };
 
 /// \brief Simple wrapper class for chaining callbacks.
@@ -344,7 +356,7 @@ public:
     Second->FileSkipped(SkippedFile, FilenameTok, FileType);
   }
 
-  bool FileNotFound(StringRef FileName,
+  bool FileNotFound(SourceLocation HashLoc, StringRef FileName,
                     SmallVectorImpl<char> &RecoveryPath) override {
     return First->FileNotFound(FileName, RecoveryPath) ||
            Second->FileNotFound(FileName, RecoveryPath);
