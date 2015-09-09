@@ -114,8 +114,10 @@ public:
     for (std::vector<const PathDiagnostic*>::iterator I = Diags.begin(),
          E = Diags.end(); I != E; ++I) {
       const PathDiagnostic *PD = *I;
+      std::string Name = PD->getCheckName().str();
+      std::string Desc = PD->getShortDescription().str();
       SourceLocation WarnLoc = PD->getLocation().asLocation();
-      Diag.Report(WarnLoc, WarnID) << PD->getShortDescription()
+      Diag.Report(WarnLoc, WarnID) << Desc + " [" + Name + "]"
                                    << PD->path.back()->getRanges();
 
       if (!IncludePath)

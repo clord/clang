@@ -129,6 +129,10 @@ public:
   /// This output is not intended to be machine-parseable.
   void printHelp(raw_ostream &out, size_t maxNameChars = 30) const ;
 
+  typedef CheckerInfoList::const_iterator info_const_iterator;
+  info_const_iterator info_begin() const { return Checkers.begin(); }
+  info_const_iterator info_end() const { return Checkers.end(); }
+
 private:
   mutable CheckerInfoList Checkers;
   mutable llvm::StringMap<size_t> Packages;
