@@ -1337,10 +1337,12 @@ void Preprocessor::HandleDigitDirective(Token &DigitTok) {
   // example.
   if (Callbacks) {
     PPCallbacks::FileChangeReason Reason = PPCallbacks::RenameFile;
+#if 0 // Hack: Disable enter/exit.
     if (IsFileEntry)
       Reason = PPCallbacks::EnterFile;
     else if (IsFileExit)
       Reason = PPCallbacks::ExitFile;
+#endif
     SrcMgr::CharacteristicKind FileKind = SrcMgr::C_User;
     if (IsExternCHeader)
       FileKind = SrcMgr::C_ExternCSystem;
